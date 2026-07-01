@@ -1,0 +1,19 @@
+.callback-content {
+  --background: #fafaf9;
+}
+
+.callback-shell {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 14px;
+  padding: 24px;
+  color: #1c1917;
+}
+
+.callback-shell p {
+  margin: 0;
+  color: #44403c;
+  font-size: 15px;
+}

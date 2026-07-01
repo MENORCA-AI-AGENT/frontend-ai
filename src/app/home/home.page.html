@@ -1,20 +1,28 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
+    <ion-title>Menorca AI Agent</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
+      <ion-title size="large">Menorca</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div>
+  <main class="home-shell">
+    <section class="summary">
+      <p class="eyebrow">Sesion</p>
+      @if (auth.isAuthenticated()) {
+        <h1>Acceso activo</h1>
+        <p>{{ auth.user()?.email || 'Usuario autenticado con Supabase' }}</p>
+        <ion-button (click)="signOut()">Cerrar sesion</ion-button>
+      } @else {
+        <h1>Acceso pendiente</h1>
+        <p>Inicia sesion con Google o Apple para continuar.</p>
+        <ion-button routerLink="/login">Ir al acceso</ion-button>
+      }
+    </section>
+  </main>
 </ion-content>

@@ -3,7 +3,13 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  apiUrl: 'http://localhost:3000',
+  supabaseUrl: 'https://ocwakwtzliledabccvgc.supabase.co',
+  supabasePublishableKey: 'sb_publishable_SjGUvDxtB7iMZAi4LhFNSg_HzuJsMtK',
+  authRedirectUrl: 'http://localhost:8100/auth/callback',
+  nativeAuthRedirectUrl: 'com.menorca.aiagent://auth/callback',
+  allowedAuthProviders: ['google', 'apple'] as const,
 };
 
 /*

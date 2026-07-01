@@ -23,6 +23,13 @@ log.txt
 /platforms
 /plugins
 
+# Codex and local test artifacts
+.agents/
+.codex/
+skills-lock.json
+.playwright-cli/
+output/playwright/
+
 # Compiled output
 /dist
 /tmp
