@@ -14,6 +14,37 @@ Ionic/Angular app for the Menorca travel assistant.
 - Home inicial con estado de sesion y cierre de sesion.
 - Build, unit tests y validacion visual con Playwright.
 
+## Documentacion tecnica
+
+La documentacion viva del frontend esta en:
+
+```txt
+docs/architecture.md
+docs/api.md
+docs/decisions.md
+docs/conventions.md
+```
+
+Estos archivos describen arquitectura, tecnologias, rutas, servicios, contratos,
+decisiones, convenciones y mejoras futuras.
+
+El estado operativo de tareas se mantiene en:
+
+```txt
+tasks/current.md
+tasks/backlog.md
+```
+
+El contexto persistente para agentes de IA se mantiene en:
+
+```txt
+.ai/project.md
+.ai/rules.md
+.ai/context.md
+.ai/commands.md
+.ai/stack.md
+```
+
 ## Configuracion
 
 Los valores publicos de Supabase viven en:
