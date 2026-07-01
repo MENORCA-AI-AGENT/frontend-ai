@@ -16,12 +16,15 @@
 - Agregar ratings de lugares y del agente.
 - Personalizar iconos y splash nativos.
 - Agregar Playwright e2e versionado para flujos criticos.
+- Extraer tokens visuales Stitch a estilos compartidos para reducir SCSS por
+  pagina y resolver warnings de presupuesto CSS.
 
 ## Bugs encontrados
 
-- `xcodebuild` no pudo completarse en este entorno por CoreSimulator
-  desactualizado.
+- Apple Sign in aun requiere validacion en dispositivo fisico con provisioning
+  profile real.
 - `npm audit` reporta vulnerabilidades pendientes.
+- `npm run build` reporta warnings de presupuesto CSS en login/home.
 
 ## Refactors pendientes
 
@@ -30,6 +33,7 @@
 - Crear componentes reutilizables para botones OAuth, estados vacios y modales.
 - Separar UI auth de logica de navegacion si crece el flujo.
 - Añadir capa de `api` compartida para fetch/error handling.
+- Extraer `NativeSocialAuthService` si crecen las reglas de Google/Apple.
 
 ## Ideas para nuevas funcionalidades
 

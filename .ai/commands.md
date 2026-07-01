@@ -53,6 +53,8 @@ cd android
 npx playwright install chromium
 npx playwright screenshot --viewport-size=375,812 http://127.0.0.1:8100/login output/playwright/login-mobile.png
 npx playwright screenshot --viewport-size=1440,900 http://127.0.0.1:8100/login output/playwright/login-desktop.png
+npx playwright screenshot --viewport-size=375,812 http://127.0.0.1:8100/home output/playwright/home-mobile.png
+npx playwright screenshot --wait-for-timeout=1500 --viewport-size=1440,900 http://127.0.0.1:8100/home output/playwright/home-desktop.png
 ```
 
 ## Git sugerido

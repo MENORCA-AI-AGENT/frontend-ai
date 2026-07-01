@@ -46,10 +46,10 @@ zone.js: 0.15.1
 @capacitor/android: ^8.4.1
 @capacitor/ios: ^8.4.1
 @capacitor/app: 8.1.0
-@capacitor/browser: ^8.0.3
 @capacitor/haptics: 8.0.2
 @capacitor/keyboard: 8.0.5
 @capacitor/status-bar: 8.0.2
+@capgo/capacitor-social-login: ^8.3.30
 ```
 
 ## Auth
@@ -58,7 +58,12 @@ zone.js: 0.15.1
 @supabase/supabase-js: ^2.110.0
 Supabase project URL: https://ocwakwtzliledabccvgc.supabase.co
 OAuth permitidos: google, apple
-Deep link: com.menorca.aiagent://auth/callback
+Deep link iOS: com.danny-armijos.menorca-ai-agent://auth/callback
+Deep link Android: com.menorca.aiagent://auth/callback
+Login nativo: provider idToken -> supabase.auth.signInWithIdToken
+iOS bundle id: com.danny-armijos.menorca-ai-agent
+Android application id: com.menorca.aiagent
+iOS entitlement: com.apple.developer.applesignin
 ```
 
 Variables frontend:
@@ -69,6 +74,10 @@ supabaseUrl
 supabasePublishableKey
 authRedirectUrl
 nativeAuthRedirectUrl
+googleWebClientId
+googleIosClientId
+appleClientId
+appleRedirectUrl
 allowedAuthProviders: ['google', 'apple']
 ```
 
@@ -82,11 +91,28 @@ Service role: prohibida en frontend
 Database/RLS: consumida indirectamente via backend o SDK cuando se habilite
 ```
 
+## Firebase / Google Sign-In
+
+```txt
+Firebase project: master-ia-83f09
+Android app: com.menorca.aiagent
+iOS app: com.danny-armijos.menorca-ai-agent
+Android config: android/app/google-services.json
+iOS config: ios/App/App/GoogleService-Info.plist
+OAuth Web Client ID: 804358190687-071h3gve8rt605sc8m05igqrp0tdr5dg.apps.googleusercontent.com
+OAuth iOS Client ID: 804358190687-1jgo41tfqn5bvcsh7o1n6bt1nhn8kg5e.apps.googleusercontent.com
+iOS reversed client ID: com.googleusercontent.apps.804358190687-1jgo41tfqn5bvcsh7o1n6bt1nhn8kg5e
+iOS Info.plist Google keys: GIDClientID, GIDServerClientID
+Google native nonce: disabled; Supabase Google provider has Skip nonce checks enabled for iOS native login
+Android SHA-1 debug: 66:D6:73:71:E5:C2:66:48:AF:61:39:A7:1C:25:0D:1E:F5:54:67:19
+```
+
 Redirect URLs requeridas:
 
 ```txt
 http://localhost:8100/auth/callback
 com.menorca.aiagent://auth/callback
+com.danny-armijos.menorca-ai-agent://auth/callback
 ```
 
 ## API keys

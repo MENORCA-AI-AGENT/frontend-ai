@@ -37,24 +37,50 @@ autoRefreshToken: true
 
 El callback se maneja explicitamente en `AuthCallbackPage`.
 
-### Browser externo en dispositivo fisico
+### Login nativo en dispositivo fisico
 
-En plataformas nativas se usa `skipBrowserRedirect` y `Capacitor Browser`.
+En plataformas nativas se usa `@capgo/capacitor-social-login` para obtener el
+`idToken` de Google o Apple y luego `supabase.auth.signInWithIdToken()`.
 
 Motivo:
 
-- Google y Apple funcionan mejor fuera del WebView.
-- Permite volver por deep link.
+- Evita abrir `Capacitor Browser` para login movil.
+- Mantiene Supabase Auth como autoridad de sesion.
+- Permite probar una experiencia mas cercana a nativa en dispositivo fisico.
 
-### Deep link unico
+Limitaciones:
 
-Se usa:
+- Google requiere `googleWebClientId` y configuracion SHA-1 en Android.
+- Los archivos Firebase nativos se versionan porque contienen configuracion
+  publica de app y permiten que Android/iOS resuelvan integraciones nativas.
+- Google nativo no envia `nonce` al SDK ni a Supabase. Decision: el SDK iOS
+  puede devolver un claim `nonce` diferente al generado en Angular, provocando
+  `Nonces mismatch`; para este flujo nativo se evita el nonce y se limpia la
+  sesion previa de Google antes de solicitar un `idToken` nuevo.
+- Supabase Auth > Providers > Google queda con `Skip nonce checks` activado.
+  Decision: en iOS nativo no tenemos acceso fiable al nonce usado para emitir el
+  `idToken`; Supabase documenta este ajuste como util para ese caso y ya fue
+  validado en dispositivo fisico.
+- Apple nativo se limita a iOS; Android requiere configuracion OAuth/Service ID.
+- Apple requiere que el bundle id firmado coincida con el App ID registrado:
+  `com.danny-armijos.menorca-ai-agent`, y que el target tenga el entitlement
+  `com.apple.developer.applesignin`.
+- Supabase tambien debe aceptar ese bundle como `Client ID` del provider Apple,
+  porque valida el claim `aud` del `idToken` nativo.
+
+### Deep links por plataforma
+
+Se usan dos schemes por limitacion de plataforma:
 
 ```txt
-com.menorca.aiagent://auth/callback
+iOS: com.danny-armijos.menorca-ai-agent://auth/callback
+Android: com.menorca.aiagent://auth/callback
 ```
 
-Esta configurado en:
+Decision: Android conserva `com.menorca.aiagent` porque el `applicationId` no
+puede contener guiones; iOS usa el bundle exacto registrado en Apple Developer.
+
+Estan configurados en:
 
 - `android/app/src/main/AndroidManifest.xml`
 - `ios/App/App/Info.plist`
@@ -83,6 +109,42 @@ Motivo:
 
 La pagina de login mantiene los logos SVG de Google y Apple dentro de botones
 grandes. Se validaron capturas mobile y desktop con Playwright.
+
+### Stitch como referencia visual
+
+El diseno actual toma tokens del proyecto Stitch `Menorca AI Travel Guide`:
+tema `Balearic Horizon`, Montserrat/Inter, azul mediterraneo `#0077b6`,
+superficies claras, acento terracota y cards de informacion turistica.
+
+Decision: la implementacion visual de `LoginPage` y `HomePage` replica las
+pantallas obtenidas desde el MCP de Stitch, no una interpretacion libre. Se
+mantiene el avatar como accion de login/logout para conservar la prueba de
+sesion sin introducir controles visibles ajenos al diseno aprobado.
+
+Decision: el presupuesto `anyComponentStyle` de produccion sube a 12 KB warning
+y 16 KB error. El limite anterior de 4 KB no era compatible con pantallas
+Stitch ricas en layout, iconos CSS y responsive states; el nuevo limite conserva
+control de tamano sin bloquear el diseno aprobado.
+
+Decision: la pantalla de login desactiva el scroll de `ion-content` y elimina
+movimiento de fondo. En iPhone esta vista debe sentirse como una entrada nativa
+estatica; cualquier desplazamiento visual se reserva para pantallas de contenido
+como Home. El boton `Omitir registro` navega a `/home` para activar el modo
+guest con cuota limitada.
+
+### Internacionalizacion runtime
+
+La app usa `I18nService` con Angular Signals para detectar
+`navigator.languages`, normalizar locales regionales (`en-US`, `ca-ES`,
+`es-ES`) y seleccionar `es`, `en` o `ca`.
+
+Decision: no se incorpora una dependencia externa ni Angular i18n compile-time
+en este hito. La app movil necesita un unico bundle nativo que cambie textos
+segun el idioma del dispositivo; una capa runtime tipada es suficiente para
+Login/Home y deja abierta la posibilidad de agregar selector manual mas tarde.
+
+Decision: el fallback es espanol porque es el idioma base del producto y el mas
+seguro para la experiencia inicial en Menorca.
 
 ## Patrones utilizados
 
@@ -118,4 +180,5 @@ grandes. Se validaron capturas mobile y desktop con Playwright.
 - Configurar firma iOS y Android release.
 - Crear environments por staging/production.
 - Agregar politica de privacidad y terminos antes de publicar con Apple.
-- Conectar clima, buses, restaurantes, supermercados y chat del agente.
+- Sustituir los datos de maqueta Stitch por clima, buses, restaurantes,
+  supermercados y chat del agente conectados a servicios reales.

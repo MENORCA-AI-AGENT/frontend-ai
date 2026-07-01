@@ -1,6 +1,8 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
+import { DEVICE_LANGUAGE_PREFERENCES } from '../../core/i18n/i18n.service';
 import { LoginPage } from './login.page';
 
 /**
@@ -12,6 +14,7 @@ import { LoginPage } from './login.page';
 describe('LoginPage', () => {
   let fixture: ComponentFixture<LoginPage>;
   let authService: jasmine.SpyObj<AuthService>;
+  let router: jasmine.SpyObj<Router>;
 
   beforeEach(async () => {
     authService = jasmine.createSpyObj<AuthService>(
@@ -23,13 +26,20 @@ describe('LoginPage', () => {
       },
     );
     authService.signInWithProvider.and.resolveTo();
+    router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
+    router.navigateByUrl.and.resolveTo(true);
 
     await TestBed.configureTestingModule({
       imports: [LoginPage],
-      providers: [{ provide: AuthService, useValue: authService }],
+      providers: [
+        { provide: AuthService, useValue: authService },
+        { provide: Router, useValue: router },
+        { provide: DEVICE_LANGUAGE_PREFERENCES, useValue: ['es-ES'] },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(LoginPage);
+    fixture.detectChanges();
   });
 
   /**
@@ -68,5 +78,20 @@ describe('LoginPage', () => {
     googleButton?.click();
 
     expect(authService.signInWithProvider).toHaveBeenCalledWith('google');
+  });
+
+  /**
+   * Confirms guest mode enters the dashboard without an OAuth redirect.
+   *
+   * Decision: the skip button is a product entry point, not decorative copy,
+   * because anonymous users receive a limited request quota.
+   */
+  it('continues to home when the user skips registration', async () => {
+    await fixture.whenStable();
+
+    const skipButton = fixture.nativeElement.querySelector('.skip-button');
+    skipButton.click();
+
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/home');
   });
 });

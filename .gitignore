@@ -29,6 +29,8 @@ log.txt
 skills-lock.json
 .playwright-cli/
 output/playwright/
+output/stitch/
+client_secret_*.json
 
 # Compiled output
 /dist

@@ -7,11 +7,16 @@
 - Usar Angular Signals cuando sea adecuado para estado local.
 - Mantener Google y Apple como unicos proveedores de login.
 - Mantener logos visibles de Google y Apple en botones de login.
+- En dispositivo fisico, priorizar login nativo con provider `idToken` y
+  `supabase.auth.signInWithIdToken`; no reintroducir `Capacitor Browser` para
+  el flujo principal.
 - No exponer service role keys, claves de IA, Stripe secret ni secretos.
 - Si el usuario pega API keys en el chat, tratarlas como comprometidas y pedir
   rotacion; documentar solo nombres de variables.
 - La publishable key de Supabase puede estar en frontend.
 - Usar `AuthService` para OAuth y session.
+- Mantener los client IDs de Google/Apple como configuracion publica, nunca como
+  secretos.
 - Usar servicios separados para llamadas backend.
 - Actualizar README, `/docs`, `/tasks` y `/.ai` al cerrar tareas importantes.
 - Ejecutar `npm run build`, `npm run lint` y tests tras cambios funcionales.
@@ -28,6 +33,8 @@
 - No crear landing decorativa cuando se pide funcionalidad.
 - Evitar textos de ayuda innecesarios dentro de la app final.
 - No romper compatibilidad de aprobacion Apple/Google en login.
+- Mantener la direccion visual Stitch `Balearic Horizon` salvo que el usuario
+  pida otro diseno.
 - Usar Playwright para revisar mobile y desktop cuando haya cambios visuales.
 
 ## Git

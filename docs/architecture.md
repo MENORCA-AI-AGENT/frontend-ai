@@ -4,7 +4,8 @@
 
 El frontend es una app Ionic/Angular standalone para Menorca AI Agent. Su primer
 bloque funcional implementa autenticacion con Supabase Auth usando Google y
-Apple, callback web y deep link nativo para Android/iOS.
+Apple. En web usa OAuth PKCE; en dispositivo fisico usa login nativo del
+proveedor y entrega el `idToken` a Supabase.
 
 La app sigue una organizacion por features y servicios compartidos:
 
@@ -12,19 +13,24 @@ La app sigue una organizacion por features y servicios compartidos:
 src/app
   auth       Pantallas de login y callback OAuth
   core       Servicios reutilizables, estado y clientes
+    i18n     Internacionalizacion runtime por idioma del dispositivo
   home       Primera pantalla despues de login
 ```
 
 ```mermaid
 flowchart TD
   Login["LoginPage"] --> AuthService["AuthService"]
+  Login --> I18n["I18nService"]
   Callback["AuthCallbackPage"] --> AuthService
   Home["HomePage"] --> AuthService
+  Home --> I18n
   BackendAuth["BackendAuthService"] --> AuthService
   AuthService --> Supabase["Supabase Auth"]
   BackendAuth --> Backend["NestJS Backend /api"]
   AppComponent["AppComponent"] --> Router["Angular Router"]
   Native["Capacitor App appUrlOpen"] --> AppComponent
+  AuthService --> SocialLogin["Capgo Social Login"]
+  SocialLogin --> Providers["Google / Apple native"]
 ```
 
 ## Tecnologias utilizadas
@@ -33,9 +39,10 @@ flowchart TD
 - Ionic Angular 8.
 - Capacitor 8.
 - Capacitor App para deep links.
-- Capacitor Browser para abrir OAuth en navegador del sistema.
+- Capgo Capacitor Social Login para Google/Apple nativo.
 - Supabase JS SDK.
 - Angular Signals (`signal`, `computed`) para estado de auth.
+- I18n runtime propio con Angular Signals para detectar `navigator.languages`.
 - Angular Router lazy routes.
 - Karma/Jasmine para unit tests.
 - ESLint para lint.
@@ -52,13 +59,21 @@ flowchart TD
 - Login con Apple.
 - Botones con logos visibles de Google y Apple.
 - OAuth PKCE con Supabase.
+- Login nativo Google/Apple con `signInWithIdToken`.
 - Callback web: `http://localhost:8100/auth/callback`.
-- Callback nativo: `com.menorca.aiagent://auth/callback`.
+- Callback nativo iOS: `com.danny-armijos.menorca-ai-agent://auth/callback`.
+- Callback nativo Android: `com.menorca.aiagent://auth/callback`.
 - Deep link Android configurado en `AndroidManifest.xml`.
 - URL Scheme iOS configurado en `Info.plist`.
+- Firebase nativo integrado con `android/app/google-services.json` y
+  `ios/App/App/GoogleService-Info.plist`.
 - `AuthService` para session state, login, callback, logout y access token.
 - `BackendAuthService` para llamar backend con bearer token.
-- Home inicial con estado de sesion.
+- Home turistico con clima, inspiracion, buses, gastronomia, suministros,
+  recomendacion, FAB del agente IA y navegacion inferior.
+- Diseno de login/home extraido desde el MCP de Stitch para el proyecto
+  `Menorca AI Travel Guide`, tema `Balearic Horizon`.
+- Internacionalizacion runtime en Login/Home con soporte `es`, `en` y `ca`.
 - README y pruebas.
 
 ## Flujo de datos
@@ -79,23 +94,22 @@ sequenceDiagram
   F->>F: Navega a /home
 ```
 
-### OAuth en dispositivo fisico
+### Login nativo en dispositivo fisico
 
 ```mermaid
 sequenceDiagram
   participant U as Usuario
   participant A as App Ionic
-  participant B as Browser nativo
+  participant P as Proveedor nativo
   participant S as Supabase Auth
 
   U->>A: Click Continuar con Google/Apple
-  A->>S: signInWithOAuth(skipBrowserRedirect)
-  S-->>A: URL OAuth
-  A->>B: Browser.open(URL OAuth)
-  B->>S: Login proveedor
-  S-->>A: com.menorca.aiagent://auth/callback?code=...
-  A->>A: appUrlOpen normaliza ruta
-  A->>S: exchangeCodeForSession(code)
+  A->>A: Limpia sesion previa Google
+  A->>P: SocialLogin.login(provider)
+  P-->>A: idToken
+  A->>S: signInWithIdToken(provider, idToken)
+  Note over S: Google provider con Skip nonce checks
+  S-->>A: Supabase session
   A->>A: Guarda session y navega a /home
 ```
 
@@ -131,6 +145,10 @@ src
         auth.service.ts
         auth.types.ts
         backend-auth.service.ts
+      i18n
+        i18n.service.ts
+        i18n.types.ts
+        translations.ts
     home
       home.page.ts/html/scss/spec.ts
   environments
@@ -139,14 +157,15 @@ src
 android
   app/src/main/AndroidManifest.xml
 ios
+  App/App/App.entitlements
   App/App/Info.plist
 ```
 
 ## Como se comunican los modulos
 
 - `AppComponent` escucha `App.addListener('appUrlOpen')` para deep links.
-- `AppComponent` convierte `com.menorca.aiagent://auth/callback?...` en ruta
-  Angular `/auth/callback?...`.
+- `AppComponent` convierte los schemes nativos iOS/Android en ruta Angular
+  `/auth/callback?...`.
 - `AuthCallbackPage` llama `AuthService.completeOAuthCallback()`.
 - `LoginPage` llama `AuthService.signInWithProvider('google' | 'apple')`.
 - `HomePage` lee signals de `AuthService` y permite logout.
@@ -161,7 +180,11 @@ apiUrl: 'http://localhost:3000'
 supabaseUrl: 'https://ocwakwtzliledabccvgc.supabase.co'
 supabasePublishableKey: 'sb_publishable_...'
 authRedirectUrl: 'http://localhost:8100/auth/callback'
-nativeAuthRedirectUrl: 'com.menorca.aiagent://auth/callback'
+nativeAuthRedirectUrl: 'com.danny-armijos.menorca-ai-agent://auth/callback'
+googleWebClientId: '804358190687-071h3gve8rt605sc8m05igqrp0tdr5dg.apps.googleusercontent.com'
+googleIosClientId: '804358190687-1jgo41tfqn5bvcsh7o1n6bt1nhn8kg5e.apps.googleusercontent.com'
+appleClientId: 'com.danny-armijos.menorca-ai-agent'
+appleRedirectUrl: 'https://ocwakwtzliledabccvgc.supabase.co/auth/v1/callback'
 allowedAuthProviders: ['google', 'apple']
 ```
 
@@ -170,12 +193,36 @@ Redirect URLs requeridas en Supabase:
 ```txt
 http://localhost:8100/auth/callback
 com.menorca.aiagent://auth/callback
+com.danny-armijos.menorca-ai-agent://auth/callback
+```
+
+Configuracion Firebase nativa:
+
+```txt
+Firebase project: master-ia-83f09
+Android package: com.menorca.aiagent
+iOS bundle: com.danny-armijos.menorca-ai-agent
+```
+
+Pendiente para Google Sign-In Android: regenerar `google-services.json` si se
+necesita que Android incluya `oauth_client`.
+
+Estado actual de Google:
+
+```txt
+Web Client ID: 804358190687-071h3gve8rt605sc8m05igqrp0tdr5dg.apps.googleusercontent.com
+Android debug SHA-1: 66:D6:73:71:E5:C2:66:48:AF:61:39:A7:1C:25:0D:1E:F5:54:67:19
+iOS Client ID: 804358190687-1jgo41tfqn5bvcsh7o1n6bt1nhn8kg5e.apps.googleusercontent.com
+iOS reversed client ID: com.googleusercontent.apps.804358190687-1jgo41tfqn5bvcsh7o1n6bt1nhn8kg5e
+iOS Info.plist Google keys: GIDClientID, GIDServerClientID
+Google nonce: no se envia en login nativo; Supabase Google provider usa Skip nonce checks para iOS
+Estado dispositivo iOS: Google y Apple autentican correctamente con Supabase Auth
 ```
 
 ## Tecnologias previstas pero aun no implementadas
 
 - Onboarding completo.
-- Home con clima, buses, restaurantes y supermercados.
+- Datos reales de clima, buses, restaurantes y supermercados.
 - Chat del agente turistico.
 - Voz con STT/TTS.
 - Cuotas guest/user/paid.

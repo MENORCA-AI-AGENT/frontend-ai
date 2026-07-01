@@ -46,7 +46,9 @@ Regla de organizacion:
 - Touch targets grandes en login.
 - Layout mobile-first y responsive.
 - Deep link nativo configurado.
-- OAuth en browser del sistema para dispositivo fisico.
+- Login nativo en dispositivo fisico mediante `@capgo/capacitor-social-login`.
+- Supabase recibe `idToken` nativo mediante `signInWithIdToken`.
+- Diseno basado en Stitch `Balearic Horizon`.
 - No se exponen service role keys ni secretos.
 - Tests unitarios para login, callback, home y app root.
 - Validacion visual con Playwright.
@@ -72,6 +74,7 @@ Tecnologias activas:
 - Ionic Angular 8.
 - Capacitor 8.
 - Supabase JS.
+- Capgo Social Login.
 - Android/iOS nativo via Capacitor.
 - Karma/Jasmine.
 - ESLint.

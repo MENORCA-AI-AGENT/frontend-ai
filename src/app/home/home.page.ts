@@ -1,28 +1,25 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import {
-  IonButton,
-  IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
-} from '@ionic/angular/standalone';
+import { IonContent } from '@ionic/angular/standalone';
 import { AuthService } from '../core/auth/auth.service';
+import { I18nService } from '../core/i18n/i18n.service';
 
 /**
- * First authenticated app surface after login.
+ * Main travel dashboard rendered after onboarding or authentication.
  *
- * Decision: this page remains lightweight for the auth slice, showing session
- * state and a stable destination before the travel widgets are implemented.
+ * Decision: the page mirrors the approved Google Stitch dashboard while keeping
+ * auth actions in the avatar so device testing can repeat Supabase sessions
+ * without adding extra visual controls outside the source design.
  */
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
-  imports: [IonButton, IonHeader, IonToolbar, IonTitle, IonContent, RouterLink],
+  imports: [IonContent, RouterLink],
 })
 export class HomePage {
   readonly auth = inject(AuthService);
+  readonly i18n = inject(I18nService);
 
   /**
    * Ends the current Supabase session.

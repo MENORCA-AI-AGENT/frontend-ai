@@ -15,7 +15,7 @@ Funcion:
 
 - Muestra login con Google y Apple.
 - Mantiene logos visibles de ambos proveedores.
-- Inicia OAuth mediante `AuthService.signInWithProvider()`.
+- Inicia web OAuth o login nativo mediante `AuthService.signInWithProvider()`.
 
 ### `/auth/callback`
 
@@ -38,7 +38,8 @@ Componente:
 
 Funcion:
 
-- Muestra estado basico de sesion.
+- Muestra dashboard turistico inicial de maqueta con clima, buses,
+  gastronomia, supermercados y recomendacion.
 - Permite cerrar sesion con `AuthService.signOut()`.
 
 ## Servicios
@@ -49,7 +50,7 @@ Dependencias:
 
 - `@supabase/supabase-js`
 - `@capacitor/core`
-- `@capacitor/browser`
+- `@capgo/capacitor-social-login`
 - Angular Signals
 - `environment`
 
@@ -58,7 +59,9 @@ Responsabilidad:
 - Crear cliente Supabase.
 - Restaurar sesion.
 - Mantener estado de auth.
-- Iniciar OAuth.
+- Iniciar OAuth web.
+- Iniciar login nativo Google/Apple en dispositivo fisico.
+- Entregar `idToken` nativo a Supabase con `signInWithIdToken`.
 - Completar callback PKCE.
 - Cerrar sesion.
 - Exponer access token para backend.
@@ -130,7 +133,7 @@ interface AuthState {
 
 ## Llamadas externas
 
-### Supabase OAuth
+### Supabase OAuth web
 
 Web:
 
@@ -143,18 +146,36 @@ await supabase.auth.signInWithOAuth({
 });
 ```
 
-Nativo:
+### Login nativo con Supabase
 
 ```ts
-const { data } = await supabase.auth.signInWithOAuth({
-  provider: 'apple',
+const login = await SocialLogin.login({
+  provider: 'google',
   options: {
-    redirectTo: 'com.menorca.aiagent://auth/callback',
-    skipBrowserRedirect: true
+    scopes: ['email', 'profile']
   }
 });
 
-await Browser.open({ url: data.url, presentationStyle: 'fullscreen' });
+await supabase.auth.signInWithIdToken({
+  provider: 'google',
+  token: login.result.idToken
+});
+```
+
+Apple iOS:
+
+```ts
+const login = await SocialLogin.login({
+  provider: 'apple',
+  options: {
+    scopes: ['email', 'name']
+  }
+});
+
+await supabase.auth.signInWithIdToken({
+  provider: 'apple',
+  token: login.result.idToken
+});
 ```
 
 Callback:
@@ -211,9 +232,9 @@ Respuesta esperada:
 - `@ionic/angular`
 - `@capacitor/core`
 - `@capacitor/app`
-- `@capacitor/browser`
 - `@capacitor/android`
 - `@capacitor/ios`
+- `@capgo/capacitor-social-login`
 - `@supabase/supabase-js`
 
 ## Ejemplos de uso interno

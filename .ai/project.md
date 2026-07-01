@@ -14,7 +14,7 @@ abiertos, chat tipo ChatGPT, voz, alarmas, ratings y pago con Stripe.
 
 - Permitir login con Google y Apple.
 - Mantener botones aprobables con logos visibles.
-- Completar OAuth web y nativo.
+- Completar OAuth web y login nativo mobile mediante `idToken`.
 - Persistir sesion Supabase.
 - Enviar access token al backend.
 - Preparar Android e iOS para pruebas fisicas.
@@ -29,9 +29,14 @@ abiertos, chat tipo ChatGPT, voz, alarmas, ratings y pago con Stripe.
 
 - `/login`: login Google/Apple.
 - `/auth/callback`: exchange PKCE.
-- `/home`: estado basico de sesion.
-- Deep link `com.menorca.aiagent://auth/callback`.
+- `/home`: dashboard turistico inicial de maqueta.
+- Deep link iOS `com.danny-armijos.menorca-ai-agent://auth/callback`.
+- Deep link Android `com.menorca.aiagent://auth/callback`.
 - Android e iOS generados por Capacitor.
+- Login nativo con `@capgo/capacitor-social-login` y Supabase
+  `signInWithIdToken`.
+- Diseno login/home basado en Stitch `Menorca AI Travel Guide`, tema
+  `Balearic Horizon`.
 - Tests unitarios y validacion visual con Playwright.
 
 ## Alcance funcional objetivo

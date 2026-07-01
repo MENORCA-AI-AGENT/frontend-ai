@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "820950355404",
+    "project_id": "master-ia-83f09",
+    "storage_bucket": "master-ia-83f09.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:820950355404:android:3b128b1f3e8cf66ef7a169",
+        "android_client_info": {
+          "package_name": "com.menorca.aiagent"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCy0eENFLs_oIqx1AIJfUupYkmcu13aUqU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

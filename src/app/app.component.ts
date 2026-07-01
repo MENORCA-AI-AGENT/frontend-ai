@@ -2,6 +2,7 @@ import { Component, NgZone, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { App } from '@capacitor/app';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
+import { I18nService } from './core/i18n/i18n.service';
 
 /**
  * Root shell for the Ionic application.
@@ -17,6 +18,7 @@ import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 export class AppComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly zone = inject(NgZone);
+  private readonly i18n = inject(I18nService);
 
   /**
    * Registers the Capacitor URL listener used by OAuth providers.
@@ -25,6 +27,8 @@ export class AppComponent implements OnInit {
    * `AuthCallbackPage` completes login for both browser and native flows.
    */
   ngOnInit(): void {
+    void this.i18n.language();
+
     void App.addListener('appUrlOpen', ({ url }) => {
       const route = this.toAngularRoute(url);
 
@@ -42,13 +46,17 @@ export class AppComponent implements OnInit {
    * Converts supported web and custom-scheme callback URLs into app routes.
    *
    * Decision: custom schemes encode `auth` as the URL host, so the method joins
-   * host, path, and query to preserve `/auth/callback?code=...`.
+   * host, path, and query to preserve `/auth/callback?code=...`. iOS uses the
+   * Apple App ID bundle, while Android keeps its valid package-style scheme.
    */
   private toAngularRoute(url: string): string | null {
     try {
       const parsed = new URL(url);
 
-      if (parsed.protocol === 'com.menorca.aiagent:') {
+      if (
+        parsed.protocol === 'com.danny-armijos.menorca-ai-agent:' ||
+        parsed.protocol === 'com.menorca.aiagent:'
+      ) {
         return `/${parsed.host}${parsed.pathname}${parsed.search}`;
       }
 

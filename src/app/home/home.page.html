@@ -1,28 +1,215 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>Menorca AI Agent</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="home-content">
+  <header class="app-bar">
+    <button
+      class="icon-button menu-button"
+      type="button"
+      [attr.aria-label]="i18n.t('home.menuAria')"
+    >
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </button>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Menorca</ion-title>
-    </ion-toolbar>
-  </ion-header>
+    <h1>{{ i18n.t('brand.name') }}</h1>
+
+    @if (auth.isAuthenticated()) {
+      <button
+        class="avatar-button"
+        type="button"
+        [attr.aria-label]="i18n.t('home.signOutAria')"
+        (click)="signOut()"
+      >
+        <img
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrSw6TMKVaqBIL6_1kgTeT-QyYLc1O_k5t-mSTsRGSmvlnEJkyK22Ftq-sfzMx4ilXnNyK2q1id2_Jgep4OAis-wXmfYVwQCvdmavRd7WvTh6sXSNFdHI3JIfDESumUXroqNvqCJETmtvCa8M9437mezKMFworCPiKLs-h7Q2-IdxP_lRaX0KI7Hj3WRSrDs3lmdAe4FJ-OMZwedMl4_DdS8uiDtVjhb3T9O2cHbnjrhbolF9b5ct-tw"
+          alt=""
+        />
+      </button>
+    } @else {
+      <a
+        class="avatar-button"
+        routerLink="/login"
+        [attr.aria-label]="i18n.t('home.signInAria')"
+      >
+        <img
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrSw6TMKVaqBIL6_1kgTeT-QyYLc1O_k5t-mSTsRGSmvlnEJkyK22Ftq-sfzMx4ilXnNyK2q1id2_Jgep4OAis-wXmfYVwQCvdmavRd7WvTh6sXSNFdHI3JIfDESumUXroqNvqCJETmtvCa8M9437mezKMFworCPiKLs-h7Q2-IdxP_lRaX0KI7Hj3WRSrDs3lmdAe4FJ-OMZwedMl4_DdS8uiDtVjhb3T9O2cHbnjrhbolF9b5ct-tw"
+          alt=""
+        />
+      </a>
+    }
+  </header>
 
   <main class="home-shell">
-    <section class="summary">
-      <p class="eyebrow">Sesion</p>
-      @if (auth.isAuthenticated()) {
-        <h1>Acceso activo</h1>
-        <p>{{ auth.user()?.email || 'Usuario autenticado con Supabase' }}</p>
-        <ion-button (click)="signOut()">Cerrar sesion</ion-button>
-      } @else {
-        <h1>Acceso pendiente</h1>
-        <p>Inicia sesion con Google o Apple para continuar.</p>
-        <ion-button routerLink="/login">Ir al acceso</ion-button>
-      }
+    <section
+      class="weather-grid"
+      [attr.aria-label]="i18n.t('home.weatherRegion')"
+    >
+      <article class="weather-card">
+        <div class="weather-top">
+          <div>
+            <p>{{ i18n.t('home.locationMahon') }}</p>
+            <h2>{{ i18n.t('home.weatherClear') }}</h2>
+          </div>
+          <strong>24°C</strong>
+        </div>
+
+        <div class="weather-bottom">
+          <span class="sun-icon" aria-hidden="true"></span>
+          <span>{{ i18n.t('home.weatherTip') }}</span>
+        </div>
+      </article>
+
+      <article class="image-card binibeca-card">
+        <img
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuALw7SjL3L79O5JxDBx3er7bBkWHQwYiypMxYOMByIS0ThVfNl74kh7kMgHEEYRrghUqkpAga7V4H-KbkdQiy_1ovu3lOrXr-EDTvKrYvDDQbBy9vzWj51M0huHpYE-5tVXREpePiwItbIJjbcQarksiV7FCuJ8slcNmFQzNfWmJ9RIiPoDawHQsXAHFkX1Mal3GzIONJ-lvbaLJcLiJtXomzY-eRkLQxq041nkYozw1mXeBhkqhdgoIw"
+          [alt]="i18n.t('home.binibecaAlt')"
+        />
+        <div>
+          <p>{{ i18n.t('home.inspiration') }}</p>
+          <h2>Binibeca Vell</h2>
+        </div>
+      </article>
+    </section>
+
+    <section
+      class="bento-grid"
+      [attr.aria-label]="i18n.t('home.travelInfoRegion')"
+    >
+      <article class="panel bus-panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="line-icon bus-icon" aria-hidden="true"></span>
+            <h2>{{ i18n.t('home.nextBuses') }}</h2>
+          </div>
+          <button class="link-button" type="button">
+            {{ i18n.t('home.viewAll') }}
+          </button>
+        </div>
+
+        <div class="bus-list">
+          <div class="bus-row is-next">
+            <div>
+              <strong>{{ i18n.t('home.busLineOne') }}</strong>
+              <span>{{ i18n.t('home.busStop') }}</span>
+            </div>
+            <b>4 min</b>
+          </div>
+          <div class="bus-row">
+            <div>
+              <strong>{{ i18n.t('home.busLineFifteen') }}</strong>
+              <span>{{ i18n.t('home.busStop') }}</span>
+            </div>
+            <b>12 min</b>
+          </div>
+          <div class="bus-row">
+            <div>
+              <strong>{{ i18n.t('home.busLineThirtyTwo') }}</strong>
+              <span>{{ i18n.t('home.busStop') }}</span>
+            </div>
+            <b>25 min</b>
+          </div>
+        </div>
+      </article>
+
+      <div class="side-grid">
+        <article class="panel gastronomy-panel">
+          <div class="panel-header compact">
+            <div class="panel-title">
+              <span class="line-icon restaurant-icon" aria-hidden="true"></span>
+              <h2>{{ i18n.t('home.gastronomy') }}</h2>
+            </div>
+          </div>
+
+          <div class="restaurant-image">
+            <img
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsmtzusUMMaPu-w1tTZV0qCY3OfMlYplsoIBWLTq3LZ2g3nazhOdCsuzxnKt0FFP8Uykgha2yF5xJEprB2EYZkgmjjN3bkib5h7KZw8HbpYz5F6BfcxtayRXB9Y11DUonlDRb3HDbMdxEYjkoAc9SUwFBKEhD8sv4pM5xzrSHQuizvBDEV6cNTH8ZUATjidiHiqihW6MjgNZOntk_KcZrlZBqqVUJT_vXezJ8x7j8WYyCteA-fgK9pmQ"
+              [alt]="i18n.t('home.gastronomyAlt')"
+            />
+            <span>{{ i18n.t('common.open') }}</span>
+          </div>
+
+          <div class="place-copy">
+            <strong>S'Amarador</strong>
+            <span>{{ i18n.t('home.samaradorMeta') }}</span>
+          </div>
+
+          <div class="rating-row">
+            <div>
+              <strong>En Moix</strong>
+              <span>{{ i18n.t('home.enMoixMeta') }}</span>
+            </div>
+            <b>4.8 ★</b>
+          </div>
+        </article>
+
+        <article class="panel supplies-panel">
+          <div class="panel-header compact">
+            <div class="panel-title">
+              <span class="line-icon basket-icon" aria-hidden="true"></span>
+              <h2>{{ i18n.t('home.supplies') }}</h2>
+            </div>
+          </div>
+
+          <div class="supply-card">
+            <div>
+              <strong>Mercadona</strong>
+              <span>{{ i18n.t('common.open') }}</span>
+            </div>
+            <p>{{ i18n.t('home.closesAt') }}</p>
+            <small>{{ i18n.t('home.distance') }}</small>
+          </div>
+
+          <div class="supply-card is-closed">
+            <div>
+              <strong>Binipreu</strong>
+              <span>{{ i18n.t('common.closed') }}</span>
+            </div>
+            <p>{{ i18n.t('home.opensTomorrow') }}</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section
+      class="featured-card"
+      [attr.aria-label]="i18n.t('home.featuredRegion')"
+    >
+      <img
+        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIsrxV6bSvjgkW-YZ0r9BnY7blG4bqxBelAGhUX9S6UdJHirOCPvSPuqIA8DDPmP-Sph2wjY-QAjOTvRxj0FdvKuBHsUriGIkFz7sBxtSBtSez2hxf1uI9JBCTqEKX5G2Ia2pOWLxpt_iStwQ2Orc2SCBfz34urO3k2l0kIFBDHuA7HnNeLzGB7MzV2NnOG7QnqB-caNg-G5EBHh1a-WfDmnRTuG14hGyDf4phJRnQ7SKksbdqjr5hxA"
+        [alt]="i18n.t('home.featuredAlt')"
+      />
+      <div>
+        <span>{{ i18n.t('home.recommended') }}</span>
+        <h2>{{ i18n.t('home.featuredTitle') }}</h2>
+        <p>{{ i18n.t('home.featuredCopy') }}</p>
+        <button type="button">{{ i18n.t('home.exploreNow') }}</button>
+      </div>
     </section>
   </main>
+
+  <button
+    class="chat-fab"
+    type="button"
+    [attr.aria-label]="i18n.t('home.agentAria')"
+  >
+    <span aria-hidden="true"></span>
+  </button>
+
+  <nav class="bottom-nav" [attr.aria-label]="i18n.t('home.navAria')">
+    <a class="active" href="#inicio">
+      <span class="nav-icon home-icon" aria-hidden="true"></span>
+      <small>{{ i18n.t('home.navHome') }}</small>
+    </a>
+    <a href="#agent">
+      <span class="nav-icon chat-icon" aria-hidden="true"></span>
+      <small>{{ i18n.t('home.navAgent') }}</small>
+    </a>
+    <a href="#history">
+      <span class="nav-icon history-icon" aria-hidden="true"></span>
+      <small>{{ i18n.t('home.navHistory') }}</small>
+    </a>
+    <a href="#profile">
+      <span class="nav-icon profile-icon" aria-hidden="true"></span>
+      <small>{{ i18n.t('home.navProfile') }}</small>
+    </a>
+  </nav>
 </ion-content>
